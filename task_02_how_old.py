@@ -5,15 +5,15 @@ class UserAge:
     def __init__(self, user_input, *args, **kwargs):
         self.birthday = self.check_date(user_input)
         self.age_attr = None
+        self.now = date.today()
         self.age = self.birthday
 
-    @staticmethod
-    def check_date(checked_str):
+    def check_date(self, checked_str):
         try:
             birthday = datetime.strptime(checked_str, "%d-%m-%Y").date()
         except ValueError:
             print('\033[91m--== ПППОЛЬЗОВАТЕЛЬ! Ты ввел неправильную дату! ==--\033[0m')
-        assert birthday < date.today(), "ты еще не родилься"
+        assert birthday < self.now, "ты еще не родилься"
         return birthday
 
     @property
@@ -22,14 +22,11 @@ class UserAge:
 
     @age.setter
     def age(self, birthday):
-        today = date.today()
-        self.age_attr = today.year - birthday.year
-        if today.month < birthday.month:
-            self.age_attr -= 1
-        elif today.month == birthday.month and today.day < birthday.day:
+        now = self.now
+        self.age_attr = self.now.year - birthday.year
+        if birthday.month > now.month or birthday.month == now.month and birthday.day > now.day:
             self.age_attr -= 1
 
 
 if __name__ == "__main__":
-    user = UserAge('12-12-2999')
-    print(f"Тебе {user.age} лет")
+    print(f"Тебе {UserAge('02-12-1999').age} лет")

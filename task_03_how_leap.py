@@ -1,37 +1,26 @@
-from datetime import datetime
-from datetime import timedelta
-from datetime import date
+from task_02_how_old import UserAge
 
 
-class UserAge:
-    def __init__(self, str, *args, **kwargs):
-        self.birthday = self.check_date(str)
+class UserLeap(UserAge):
+
+    def __init__(self, user_input, *args, **kwargs):
+        super().__init__(user_input)
+        self.leap_years_count = 0
+        self.leap_years = self.birthday
 
     @staticmethod
-    def check_date(check_str):
-        try:
-            birthday = datetime.strptime(check_str, "%d-%m-%Y").date()
-        except ValueError():
-            print('пользователь, ты ввел неправильную дату')
-        else:
-            assert birthday < date.today(), "ты еще не родилься"
-            return birthday
+    def is_leap(year):
+        return year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
 
     @property
-    def age(self):
-        today = date.today()
-        age = today.year - self.birthday.year
-        if today.month < self.birthday.month:
-            age -= 1
-        elif today.month == self.birthday.month and today.day < self.birthday.day:
-            age -= 1
-        return age
+    def leap_years(self):
+        return self.leap_years_count
+
+    @leap_years.setter
+    def leap_years(self, birthday):
+        for year in range(birthday.year, self.now.year + 1):
+            self.leap_years_count += 1 if self.is_leap(year) else 0
 
 
 if __name__ == "__main__":
-
-    date_ch = '44-12-1999'
-
-    user = UserAge(date_ch)
-
-    print(f"Тебе {user.age} лет")
+    print(f"Високосных в твоей жизни -- {UserLeap('21-12-1999').leap_years} лет")
