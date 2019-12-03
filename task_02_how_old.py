@@ -1,37 +1,35 @@
-from datetime import datetime
-from datetime import timedelta
-from datetime import date
+from datetime import datetime, date
 
 
 class UserAge:
-    def __init__(self, str, *args, **kwargs):
-        self.birthday = self.check_date(str)
+    def __init__(self, user_input, *args, **kwargs):
+        self.birthday = self.check_date(user_input)
+        self.age_attr = None
+        self.age = self.birthday
 
     @staticmethod
-    def check_date(check_str):
+    def check_date(checked_str):
         try:
-            birthday = datetime.strptime(check_str, "%d-%m-%Y").date()
-        except ValueError():
-            print('пользователь, ты ввел неправильную дату')
-        else:
-            assert birthday < date.today(), "ты еще не родилься"
-            return birthday
+            birthday = datetime.strptime(checked_str, "%d-%m-%Y").date()
+        except ValueError:
+            print('\033[91m--== ПППОЛЬЗОВАТЕЛЬ! Ты ввел неправильную дату! ==--\033[0m')
+        assert birthday < date.today(), "ты еще не родилься"
+        return birthday
 
     @property
     def age(self):
+        return self.age_attr
+
+    @age.setter
+    def age(self, birthday):
         today = date.today()
-        age = today.year - self.birthday.year
-        if today.month < self.birthday.month:
-            age -= 1
-        elif today.month == self.birthday.month and today.day < self.birthday.day:
-            age -= 1
-        return age
+        self.age_attr = today.year - birthday.year
+        if today.month < birthday.month:
+            self.age_attr -= 1
+        elif today.month == birthday.month and today.day < birthday.day:
+            self.age_attr -= 1
 
 
 if __name__ == "__main__":
-
-    date_ch = '44-12-1999'
-
-    user = UserAge(date_ch)
-
+    user = UserAge('12-12-2999')
     print(f"Тебе {user.age} лет")
