@@ -126,31 +126,31 @@ print(f"Check password '1234' -- {user.check_password('1234')}")
 from datetime import datetime, date
 
 
+class InvalidBirthday(Exception):
+    pass
+
+
 class UserAge:
     def __init__(self, user_input, *args, **kwargs):
-        self.birthday = self.check_date(user_input)
-        self.age_attr = None
         self.now = date.today()
-        self.age = self.birthday
+        self.birthday = self.check_date(user_input)
+        self.age = self.get_age(self.birthday)
 
     def check_date(self, checked_str):
         try:
             birthday = datetime.strptime(checked_str, "%d-%m-%Y").date()
         except ValueError:
             print('\033[91m--== ПППОЛЬЗОВАТЕЛЬ! Ты ввел неправильную дату! ==--\033[0m')
-        assert birthday < self.now, "ты еще не родилься"
+        if birthday > self.now:
+            raise InvalidBirthday("ты еще не родилься")
         return birthday
 
-    @property
-    def age(self):
-        return self.age_attr
-
-    @age.setter
-    def age(self, birthday):
+    def get_age(self, birthday):
         now = self.now
-        self.age_attr = self.now.year - birthday.year
+        age = now.year - birthday.year
         if birthday.month > now.month or birthday.month == now.month and birthday.day > now.day:
-            self.age_attr -= 1
+            age -= 1
+        return age
 
 
 if __name__ == "__main__":
@@ -180,25 +180,20 @@ class UserLeap(UserAge):
 
     def __init__(self, user_input, *args, **kwargs):
         super().__init__(user_input)
-        self.leap_years_count = 0
-        self.leap_years = self.birthday
+        self.leap_years = self.get_leap_years()
 
     @staticmethod
     def is_leap(year):
         return year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
 
-    @property
-    def leap_years(self):
-        return self.leap_years_count
-
-    @leap_years.setter
-    def leap_years(self, birthday):
-        for year in range(birthday.year, self.now.year + 1):
-            self.leap_years_count += 1 if self.is_leap(year) else 0
+    def get_leap_years(self):
+        life_period = range(self.birthday.year, self.now.year + 1)
+        return sum([self.is_leap(year) for year in life_period])
 
 
 if __name__ == "__main__":
     print(f"Високосных в твоей жизни -- {UserLeap('21-12-1999').leap_years} лет")
+
 
 
 ```

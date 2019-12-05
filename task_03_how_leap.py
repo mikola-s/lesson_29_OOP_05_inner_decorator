@@ -5,21 +5,15 @@ class UserLeap(UserAge):
 
     def __init__(self, user_input, *args, **kwargs):
         super().__init__(user_input)
-        self.leap_years_count = 0
-        self.leap_years = self.birthday
+        self.leap_years = self.get_leap_years()
 
     @staticmethod
     def is_leap(year):
         return year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
 
-    @property
-    def leap_years(self):
-        return self.leap_years_count
-
-    @leap_years.setter
-    def leap_years(self, birthday):
-        for year in range(birthday.year, self.now.year + 1):
-            self.leap_years_count += 1 if self.is_leap(year) else 0
+    def get_leap_years(self):
+        life_period = range(self.birthday.year, self.now.year + 1)
+        return sum([self.is_leap(year) for year in life_period])
 
 
 if __name__ == "__main__":
